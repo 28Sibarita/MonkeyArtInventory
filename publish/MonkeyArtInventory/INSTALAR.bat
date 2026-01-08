@@ -47,7 +47,7 @@ powershell -Command ^
     "$shortcut.TargetPath = '%INSTALL_DIR%\MonkeyArtInventory.exe'; " ^
     "$shortcut.WorkingDirectory = '%INSTALL_DIR%'; " ^
     "$shortcut.Description = 'Monkey Art Inventory - Gestion de inventario'; " ^
-    "$shortcut.IconLocation = '%INSTALL_DIR%\MonkeyArtInventory.exe,0'; " ^
+    "$shortcut.IconLocation = '%INSTALL_DIR%\app.ico,0'; " ^
     "$shortcut.Save()"
 
 REM Crear acceso directo en Menu de Inicio
@@ -59,7 +59,7 @@ powershell -Command ^
     "$shortcut.TargetPath = '%INSTALL_DIR%\MonkeyArtInventory.exe'; " ^
     "$shortcut.WorkingDirectory = '%INSTALL_DIR%'; " ^
     "$shortcut.Description = 'Monkey Art Inventory - Gestion de inventario'; " ^
-    "$shortcut.IconLocation = '%INSTALL_DIR%\MonkeyArtInventory.exe,0'; " ^
+    "$shortcut.IconLocation = '%INSTALL_DIR%\app.ico,0'; " ^
     "$shortcut.Save()"
 
 echo.
