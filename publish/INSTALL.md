@@ -7,10 +7,19 @@
 ## Instalación
 
 1. **Descargar**: Descarga y extrae `MonkeyArtInventory.zip`
-2. **Ejecutar**: 
+
+2. **Opción A - Ejecución directa** (rápido):
    - Ve a la carpeta extraída
    - Abre `MonkeyArtInventory.exe` (doble click)
-3. ¡Listo! La aplicación se abrirá
+
+3. **Opción B - Instalar en Menú de Inicio** (recomendado):
+   - Ve a la carpeta extraída
+   - Click derecho en `install-shortcut.bat`
+   - Selecciona "Ejecutar como administrador"
+   - Se creará un acceso directo en tu Menú de Inicio
+   - Luego busca "Monkey Art" en el Menú de Inicio o usa la tecla Windows
+
+¡Listo! La aplicación se abrirá
 
 ## Primera ejecución
 
