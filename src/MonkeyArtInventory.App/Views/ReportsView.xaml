@@ -1,0 +1,66 @@
+<UserControl x:Class="MonkeyArtInventory.App.Views.ReportsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer>
+        <StackPanel>
+            <TextBlock Text="Informes" FontSize="18" FontWeight="Bold" Margin="8" />
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Informe Semanal" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Report.PeriodStart, StringFormat=Desde {0:yyyy-MM-dd}}" />
+                    <TextBlock Text="{Binding Report.PeriodEnd, StringFormat=Hasta {0:yyyy-MM-dd}}" />
+
+                    <WrapPanel Margin="0,8,0,0">
+                        <StackPanel Width="160">
+                            <TextBlock Text="Entradas Totales" />
+                            <TextBlock Text="{Binding Report.Totals.TotalEntries}" FontWeight="Bold" />
+                        </StackPanel>
+                        <StackPanel Width="160">
+                            <TextBlock Text="Salidas Totales" />
+                            <TextBlock Text="{Binding Report.Totals.TotalExits}" FontWeight="Bold" />
+                        </StackPanel>
+                        <StackPanel Width="200">
+                            <TextBlock Text="Total Ventas Estimadas" />
+                            <TextBlock Text="{Binding Report.Totals.TotalEstimatedSales}" FontWeight="Bold" />
+                        </StackPanel>
+                    </WrapPanel>
+
+                    <TextBlock Text="Directorio de salida" Margin="0,8,0,0" />
+                    <TextBox Text="{Binding OutputDirectory}" />
+
+                    <WrapPanel>
+                        <Button Content="Generar" Command="{Binding GenerateReportCommand}" />
+                        <Button Content="Exportar PDF + Excel" Command="{Binding ExportReportCommand}" />
+                        <Button Content="Ver detalles" Command="{Binding OpenDetailedCommand}" Margin="8,0,0,0" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Productos principales" FontWeight="Bold" />
+                    <DataGrid ItemsSource="{Binding Report.TopProducts}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Producto" Binding="{Binding ProductName}" Width="*" />
+                            <DataGridTextColumn Header="Cantidad" Binding="{Binding Quantity}" Width="100" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Stock por Producto" FontWeight="Bold" />
+                    <DataGrid ItemsSource="{Binding Report.StockByProduct}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Producto" Binding="{Binding ProductName}" Width="*" />
+                            <DataGridTextColumn Header="Código de barras" Binding="{Binding Barcode}" Width="160" />
+                            <DataGridTextColumn Header="Existencias" Binding="{Binding Stock}" Width="80" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

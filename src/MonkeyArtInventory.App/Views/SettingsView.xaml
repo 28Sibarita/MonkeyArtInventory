@@ -1,0 +1,35 @@
+<UserControl x:Class="MonkeyArtInventory.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer>
+        <StackPanel>
+            <TextBlock Text="Configuración" FontSize="18" FontWeight="Bold" Margin="8" />
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Directorio de datos" />
+                    <TextBox Text="{Binding DataDirectory}" />
+
+                    <TextBlock Text="Ruta de la base de datos" />
+                    <TextBox Text="{Binding DatabasePath}" />
+
+                    <TextBlock Text="Directorio de reportes" />
+                    <TextBox Text="{Binding ReportsDirectory}" />
+
+                    <TextBlock Text="Moneda" />
+                    <TextBox Text="{Binding Currency}" IsReadOnly="True" />
+
+                    <CheckBox Content="Habilitar precios" IsChecked="{Binding EnablePrices}" Margin="4" />
+
+                    <TextBlock Text="Retención de copias" />
+                    <TextBox Text="{Binding BackupRetention}" />
+
+                    <WrapPanel Margin="0,8,0,0">
+                        <Button Content="Guardar configuración" Command="{Binding SaveCommand}" />
+                        <Button Content="Crear copia ahora" Command="{Binding CreateBackupCommand}" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

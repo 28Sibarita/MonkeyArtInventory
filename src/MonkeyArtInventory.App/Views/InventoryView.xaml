@@ -1,0 +1,48 @@
+<UserControl x:Class="MonkeyArtInventory.App.Views.InventoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Style="{StaticResource Card}" Grid.Row="0">
+            <StackPanel>
+                <TextBlock Text="Inventario" FontSize="18" FontWeight="Bold" />
+                <WrapPanel>
+                    <TextBox x:Name="SearchBox" Width="220" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" KeyDown="SearchBox_KeyDown" />
+                    <ComboBox Width="160" ItemsSource="{Binding TypeOptions}" DisplayMemberPath="Label" SelectedItem="{Binding SelectedType}" />
+                    <CheckBox Content="Bajo stock" IsChecked="{Binding OnlyLowStock}" Margin="6" />
+                    <CheckBox Content="Sin stock" IsChecked="{Binding OnlyOutOfStock}" Margin="6" />
+                    <Button Content="Aplicar" Command="{Binding RefreshCommand}" />
+                </WrapPanel>
+                <WrapPanel Margin="0,8,0,0">
+                    <Button Content="Nuevo producto" Command="{Binding NewProductCommand}" />
+                    <Button Content="Editar" Command="{Binding EditProductCommand}" />
+                    <Button Content="Eliminar" Command="{Binding DeleteProductCommand}" />
+                    <Button Content="Registrar ajuste" Command="{Binding RegisterAdjustmentCommand}" />
+                    <Button Content="Registrar merma" Command="{Binding RegisterLossCommand}" />
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource Card}" Grid.Row="1">
+            <DataGrid ItemsSource="{Binding Products}"
+                      SelectedItem="{Binding SelectedProduct}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                    <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*" />
+                    <DataGridTextColumn Header="Tipo" Binding="{Binding TypeLabel}" Width="120" />
+                    <DataGridTextColumn Header="Código de barras" Binding="{Binding Barcode}" Width="150" />
+                    <DataGridTextColumn Header="Existencias" Binding="{Binding Stock}" Width="80" />
+                    <DataGridTextColumn Header="Mín" Binding="{Binding StockMinimo}" Width="60" />
+                    <DataGridCheckBoxColumn Header="Activo" Binding="{Binding IsActive}" Width="70" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

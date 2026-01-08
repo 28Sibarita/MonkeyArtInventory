@@ -1,0 +1,63 @@
+<UserControl x:Class="MonkeyArtInventory.App.Views.MovementEntryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid FocusManager.FocusedElement="{Binding ElementName=BarcodeTextBox}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" Margin="8" />
+
+        <Border Grid.Row="1" Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Text="Escanear código de barras" />
+                <TextBox x:Name="BarcodeTextBox" Text="{Binding BarcodeText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding ResolveBarcodeCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <TextBlock Text="Presione Enter para buscar" Foreground="Gray" Margin="4,0,0,8" />
+                <CheckBox Content="Autoguardar al escanear" IsChecked="{Binding AutoSaveOnScan}" Margin="0,4,0,8" />
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Producto: " FontWeight="Bold" />
+                    <TextBlock Text="{Binding SelectedProduct.Name}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Stock actual: " FontWeight="Bold" />
+                    <TextBlock Text="{Binding CurrentStock}" />
+                </StackPanel>
+
+                <WrapPanel Margin="0,8,0,0">
+                    <StackPanel Width="120">
+                        <TextBlock Text="Cantidad" />
+                        <TextBox Text="{Binding Quantity}" />
+                    </StackPanel>
+                    <StackPanel Width="160" Visibility="{Binding EnablePrices, Converter={StaticResource BoolToVisibility}}">
+                        <TextBlock Text="Precio unitario" />
+                        <TextBox Text="{Binding UnitPrice}" />
+                    </StackPanel>
+                </WrapPanel>
+
+                <Button Content="Cliente" Command="{Binding ToggleClientPanelCommand}" />
+                <StackPanel Visibility="{Binding ShowClientPanel, Converter={StaticResource BoolToVisibility}}" Margin="0,8,0,0">
+                    <TextBlock Text="Nombre cliente" />
+                    <TextBox Text="{Binding ClientName}" />
+                    <TextBlock Text="Precio acordado (opcional)" />
+                    <TextBox Text="{Binding ClientPrice}" />
+                    <CheckBox Content="Consignación" IsChecked="{Binding IsConsignment}" />
+                    <TextBlock Text="Nota del cliente" />
+                    <TextBox Text="{Binding ClientNote}" Height="60" AcceptsReturn="True" />
+                </StackPanel>
+
+                <WrapPanel Margin="0,8,0,0">
+                    <Button Content="Guardar" Command="{Binding SaveCommand}" />
+                    <Button Content="Limpiar" Command="{Binding ClearCommand}" />
+                </WrapPanel>
+
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

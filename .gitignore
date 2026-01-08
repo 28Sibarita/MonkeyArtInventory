@@ -1,0 +1,38 @@
+# Build results
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.sln.iml
+
+# NuGet
+.nuget/
+*.nupkg
+*.snupkg
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Application
+out_reports/
+*.db
+settings.json
+logs/
+Backups/
+
+# Temp files
+*.log
+*.tmp
