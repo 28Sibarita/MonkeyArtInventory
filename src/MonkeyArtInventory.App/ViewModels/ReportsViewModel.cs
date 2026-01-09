@@ -37,18 +37,20 @@ public class ReportsViewModel : ObservableObject
         SendEmailCommand = new AsyncRelayCommand(SendEmailAsync);
         OpenDetailedCommand = new RelayCommand(OpenDetailed);
 
-        // Load report asynchronously without blocking
-        Task.Run(async () => 
+        // Load report asynchronously on UI thread (fire and forget)
+        _ = LoadInitialReportAsync();
+    }
+
+    private async Task LoadInitialReportAsync()
+    {
+        try
         {
-            try
-            {
-                await GenerateAsync();
-            }
-            catch
-            {
-                // Ignore startup errors
-            }
-        });
+            await GenerateAsync();
+        }
+        catch
+        {
+            // Ignore startup errors
+        }
     }
 
     public WeeklyReportDto? Report
