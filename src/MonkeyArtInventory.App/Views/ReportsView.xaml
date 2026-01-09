@@ -30,10 +30,14 @@
                     <TextBox Text="{Binding OutputDirectory}" />
 
                     <WrapPanel>
-                        <Button Content="Generar" Command="{Binding GenerateReportCommand}" />
-                        <Button Content="Exportar PDF + Excel" Command="{Binding ExportReportCommand}" />
-                        <Button Content="Ver detalles" Command="{Binding OpenDetailedCommand}" Margin="8,0,0,0" />
+                        <Button Content="📊 Generar" Command="{Binding GenerateReportCommand}" />
+                        <Button Content="📄 Exportar PDF + Excel" Command="{Binding ExportReportCommand}" />
+                        <Button Content="📨 Enviar por correo" Command="{Binding SendEmailCommand}" 
+                                IsEnabled="{Binding CanSendEmail}" Margin="8,0,0,0"/>
+                        <Button Content="🔍 Ver detalles" Command="{Binding OpenDetailedCommand}" Margin="8,0,0,0" />
                     </WrapPanel>
+                    <TextBlock Text="{Binding EmailStatus}" Foreground="Green" FontSize="11" Margin="0,4,0,0"
+                               Visibility="{Binding EmailStatus, Converter={StaticResource NullToVisibilityConverter}}"/>
                 </StackPanel>
             </Border>
 

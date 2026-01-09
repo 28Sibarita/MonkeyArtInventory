@@ -5,6 +5,7 @@ using MonkeyArtInventory.Core.DTOs;
 using MonkeyArtInventory.Core.Services;
 using MonkeyArtInventory.App.Infrastructure;
 using System;
+using System.IO;
 
 namespace MonkeyArtInventory.App.ViewModels;
 
@@ -12,23 +13,28 @@ public class ReportsViewModel : ObservableObject
 {
     private readonly ReportService _reportService;
     private readonly SettingsService _settingsService;
+    private readonly EmailService _emailService;
     private readonly NavigationStore _navigationStore;
     private readonly Func<InformesDetalladoViewModel> _informesFactory;
 
     private WeeklyReportDto? _report;
     private bool _isBusy;
     private string _outputDirectory;
+    private string? _emailStatus;
+    private string? _lastExportedPdfPath;
 
-    public ReportsViewModel(ReportService reportService, SettingsService settingsService, NavigationStore navigationStore, Func<InformesDetalladoViewModel> informesFactory)
+    public ReportsViewModel(ReportService reportService, SettingsService settingsService, EmailService emailService, NavigationStore navigationStore, Func<InformesDetalladoViewModel> informesFactory)
     {
         _reportService = reportService;
         _settingsService = settingsService;
+        _emailService = emailService;
         _navigationStore = navigationStore;
         _informesFactory = informesFactory;
         _outputDirectory = _settingsService.Current.ReportsDirectory;
 
         GenerateReportCommand = new AsyncRelayCommand(GenerateAsync);
         ExportReportCommand = new RelayCommand(Export, () => Report is not null);
+        SendEmailCommand = new AsyncRelayCommand(SendEmailAsync, () => CanSendEmail);
         OpenDetailedCommand = new RelayCommand(OpenDetailed);
 
         _ = GenerateAsync();
@@ -56,8 +62,17 @@ public class ReportsViewModel : ObservableObject
         set => SetProperty(ref _outputDirectory, value);
     }
 
+    public string? EmailStatus
+    {
+        get => _emailStatus;
+        set => SetProperty(ref _emailStatus, value);
+    }
+
+    public bool CanSendEmail => _emailService.IsConfigured();
+
     public IAsyncRelayCommand GenerateReportCommand { get; }
     public IRelayCommand ExportReportCommand { get; }
+    public IAsyncRelayCommand SendEmailCommand { get; }
     public IRelayCommand OpenDetailedCommand { get; }
 
     private async Task GenerateAsync()
@@ -85,7 +100,58 @@ public class ReportsViewModel : ObservableObject
             : OutputDirectory;
 
         _reportService.ExportWeeklyReport(Report, output);
-        MessageBox.Show("Report exported.", "Reports", MessageBoxButton.OK, MessageBoxImage.Information);
+        
+        // Store the path to the last exported PDF for email sending
+        var pdfFileName = $"Informe_Semanal_{Report.PeriodStart:yyyyMMdd}_{Report.PeriodEnd:yyyyMMdd}.pdf";
+        _lastExportedPdfPath = Path.Combine(output, pdfFileName);
+        
+        MessageBox.Show("Informe exportado correctamente.", "Informes", MessageBoxButton.OK, MessageBoxImage.Information);
+        OnPropertyChanged(nameof(CanSendEmail));
+    }
+
+    private async Task SendEmailAsync()
+    {
+        EmailStatus = null;
+
+        // If no report exported yet, export first
+        if (string.IsNullOrEmpty(_lastExportedPdfPath) || !File.Exists(_lastExportedPdfPath))
+        {
+            if (Report is null)
+            {
+                MessageBox.Show("Primero genera y exporta el informe.", "Enviar correo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Export the report first
+            var output = string.IsNullOrWhiteSpace(OutputDirectory)
+                ? _settingsService.Current.ReportsDirectory
+                : OutputDirectory;
+
+            _reportService.ExportWeeklyReport(Report, output);
+            var pdfFileName = $"Informe_Semanal_{Report.PeriodStart:yyyyMMdd}_{Report.PeriodEnd:yyyyMMdd}.pdf";
+            _lastExportedPdfPath = Path.Combine(output, pdfFileName);
+        }
+
+        IsBusy = true;
+        try
+        {
+            var (success, message) = await _emailService.SendReportAsync(_lastExportedPdfPath);
+            
+            if (success)
+            {
+                EmailStatus = $"✓ {message}";
+                MessageBox.Show(message, "Correo enviado", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                EmailStatus = null;
+                MessageBox.Show(message, "Error al enviar", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void OpenDetailed()

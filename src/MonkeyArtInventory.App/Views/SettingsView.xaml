@@ -5,8 +5,11 @@
         <StackPanel>
             <TextBlock Text="Configuración" FontSize="18" FontWeight="Bold" Margin="8" />
 
+            <!-- Configuración General -->
             <Border Style="{StaticResource Card}">
                 <StackPanel>
+                    <TextBlock Text="📁 Configuración General" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,8"/>
+                    
                     <TextBlock Text="Directorio de datos" />
                     <TextBox Text="{Binding DataDirectory}" />
 
@@ -25,9 +28,76 @@
                     <TextBox Text="{Binding BackupRetention}" />
 
                     <WrapPanel Margin="0,8,0,0">
-                        <Button Content="Guardar configuración" Command="{Binding SaveCommand}" />
-                        <Button Content="Crear copia ahora" Command="{Binding CreateBackupCommand}" />
+                        <Button Content="💾 Guardar configuración" Command="{Binding SaveCommand}" />
+                        <Button Content="📦 Crear copia ahora" Command="{Binding CreateBackupCommand}" />
                     </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Configuración de Correo Electrónico -->
+            <Border Style="{StaticResource Card}" Margin="8,8,8,8">
+                <StackPanel>
+                    <TextBlock Text="📧 Configuración de Correo Electrónico" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,8"/>
+                    
+                    <CheckBox Content="Habilitar envío de informes por correo" IsChecked="{Binding EmailEnabled}" Margin="4,0,4,8" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
+                            <TextBlock Text="Servidor SMTP" />
+                            <TextBox Text="{Binding SmtpServer}" IsEnabled="{Binding EmailEnabled}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Grid.Row="0" Width="80">
+                            <TextBlock Text="Puerto" />
+                            <TextBox Text="{Binding SmtpPort}" IsEnabled="{Binding EmailEnabled}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Usuario SMTP (correo)" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding SmtpUsername}" IsEnabled="{Binding EmailEnabled}"/>
+
+                    <TextBlock Text="Contraseña de aplicación" Margin="0,4,0,0"/>
+                    <PasswordBox x:Name="PasswordBox" IsEnabled="{Binding EmailEnabled}" 
+                                 PasswordChanged="PasswordBox_PasswordChanged"/>
+                    <TextBlock Text="Para Gmail: usa una 'Contraseña de aplicación' desde tu cuenta Google" 
+                               FontSize="10" Foreground="Gray" Margin="0,2,0,0"/>
+
+                    <TextBlock Text="Correo remitente (From)" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding EmailFrom}" IsEnabled="{Binding EmailEnabled}"/>
+
+                    <TextBlock Text="Correo(s) destinatario(s) (separar con ; o ,)" Margin="0,4,0,0"/>
+                    <TextBox Text="{Binding EmailTo}" IsEnabled="{Binding EmailEnabled}"/>
+
+                    <CheckBox Content="Usar SSL/TLS" IsChecked="{Binding UseSsl}" IsEnabled="{Binding EmailEnabled}" Margin="4,8,4,0" />
+
+                    <WrapPanel Margin="0,12,0,0">
+                        <Button Content="📨 Enviar correo de prueba" 
+                                Command="{Binding SendTestEmailCommand}" 
+                                IsEnabled="{Binding EmailEnabled}"/>
+                    </WrapPanel>
+
+                    <!-- Instrucciones para Gmail -->
+                    <Border Background="#FFF3E0" CornerRadius="4" Padding="8" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="📋 Instrucciones para Gmail:" FontWeight="SemiBold" FontSize="12"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="11" Margin="0,4,0,0">
+1. Ve a tu cuenta de Google → Seguridad
+2. Activa la verificación en dos pasos
+3. Busca "Contraseñas de aplicación"
+4. Crea una nueva contraseña para "Correo"
+5. Usa esa contraseña (16 caracteres) aquí
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </Border>
         </StackPanel>

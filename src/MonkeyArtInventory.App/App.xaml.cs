@@ -47,6 +47,7 @@ public partial class App : Application
 
         services.AddSingleton(settingsService);
         services.AddSingleton<BackupService>();
+        services.AddSingleton<EmailService>();
 
         services.AddDbContext<InventoryDbContext>(options =>
         {
