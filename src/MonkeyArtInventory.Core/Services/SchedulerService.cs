@@ -97,6 +97,51 @@ public class SchedulerService : IDisposable
         Start();
     }
 
+    /// <summary>
+    /// Send the report immediately (manual trigger for testing)
+    /// </summary>
+    public async Task<(bool Success, string Message)> SendNowAsync()
+    {
+        if (!_emailService.IsConfigured())
+        {
+            return (false, "El correo no está configurado");
+        }
+
+        try
+        {
+            var settings = _settingsService.Current;
+
+            // Generate the report
+            Log("Generando informe semanal...");
+            var report = await _reportService.BuildWeeklyReportAsync();
+
+            // Export to PDF
+            Log("Exportando PDF...");
+            var pdfPath = _reportService.ExportWeeklyReport(report, settings.ReportsDirectory);
+
+            // Send email
+            Log("Enviando por correo...");
+            var (success, message) = await _emailService.SendReportAsync(pdfPath, "Informe Semanal Manual - Monkey Art Inventory");
+
+            if (success)
+            {
+                Log($"✓ Informe enviado exitosamente");
+                StatusChanged?.Invoke(this, $"Último envío manual: {DateTime.Now:dd/MM/yyyy HH:mm}");
+                return (true, "Informe enviado correctamente");
+            }
+            else
+            {
+                Log($"✗ Error al enviar: {message}");
+                return (false, message);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log($"✗ Error: {ex.Message}");
+            return (false, ex.Message);
+        }
+    }
+
     private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         try

@@ -10,6 +10,8 @@
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <converters:NullToVisibilityConverter x:Key="NullToVisibility" />
             <converters:ImagePathToBitmapConverter x:Key="ImagePathToBitmapConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             
             <SolidColorBrush x:Key="AppBackground" Color="#FFF6F7F9" />
             <SolidColorBrush x:Key="AccentBrush" Color="#FF2A5CAA" />

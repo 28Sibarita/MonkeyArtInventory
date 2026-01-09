@@ -133,14 +133,24 @@
                         <TextBlock Text="{Binding SchedulerStatus}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                     </Border>
 
+                    <!-- Botón enviar ahora para probar -->
+                    <Button Content="📧 Enviar Informe Ahora (Probar)" 
+                            Command="{Binding SendScheduledReportNowCommand}" 
+                            Background="#4CAF50" Foreground="White"
+                            Padding="12,8" Margin="0,12,0,0" HorizontalAlignment="Left"
+                            IsEnabled="{Binding IsSendingScheduledReport, Converter={StaticResource InverseBoolConverter}, FallbackValue=True}"/>
+                    <TextBlock Text="Enviando..." FontStyle="Italic" Foreground="Gray" 
+                               Visibility="{Binding IsSendingScheduledReport, Converter={StaticResource BoolToVisibility}}"
+                               Margin="0,4,0,0"/>
+
                     <!-- Información adicional -->
                     <Border Background="#F3E5F5" CornerRadius="4" Padding="8" Margin="0,8,0,0">
                         <StackPanel>
                             <TextBlock Text="ℹ️ Información:" FontWeight="SemiBold" FontSize="12"/>
                             <TextBlock TextWrapping="Wrap" FontSize="11" Margin="0,4,0,0">
+• La configuración se guarda automáticamente
 • La app debe estar abierta para enviar automáticamente
-• Se enviará el informe de la semana anterior
-• Asegúrate de tener configurado el correo correctamente
+• Usa el botón "Enviar Ahora" para probar la configuración
 • El informe se guardará también en la carpeta de reportes
                             </TextBlock>
                         </StackPanel>

@@ -43,6 +43,7 @@ public class SettingsViewModel : ObservableObject
     private int _schedulerHour = 8;
     private int _schedulerMinute = 0;
     private string _schedulerStatus = string.Empty;
+    private bool _isSendingScheduledReport;
 
     public SettingsViewModel(SettingsService settingsService, BackupService backupService, EmailService emailService, SchedulerService schedulerService)
     {
@@ -73,6 +74,7 @@ public class SettingsViewModel : ObservableObject
         SaveCommand = new RelayCommand(Save);
         CreateBackupCommand = new RelayCommand(CreateBackup);
         SendTestEmailCommand = new AsyncRelayCommand(SendTestEmailAsync);
+        SendScheduledReportNowCommand = new AsyncRelayCommand(SendScheduledReportNowAsync);
     }
 
     public ObservableCollection<DayOption> DayOptions { get; }
@@ -179,6 +181,7 @@ public class SettingsViewModel : ObservableObject
             if (SetProperty(ref _schedulerEnabled, value))
             {
                 UpdateSchedulerStatus();
+                SaveSchedulerSettings();
             }
         }
     }
@@ -191,6 +194,7 @@ public class SettingsViewModel : ObservableObject
             if (SetProperty(ref _selectedDay, value))
             {
                 UpdateSchedulerStatus();
+                SaveSchedulerSettings();
             }
         }
     }
@@ -203,6 +207,7 @@ public class SettingsViewModel : ObservableObject
             if (SetProperty(ref _schedulerHour, value))
             {
                 UpdateSchedulerStatus();
+                SaveSchedulerSettings();
             }
         }
     }
@@ -215,6 +220,7 @@ public class SettingsViewModel : ObservableObject
             if (SetProperty(ref _schedulerMinute, value))
             {
                 UpdateSchedulerStatus();
+                SaveSchedulerSettings();
             }
         }
     }
@@ -228,6 +234,13 @@ public class SettingsViewModel : ObservableObject
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand CreateBackupCommand { get; }
     public IAsyncRelayCommand SendTestEmailCommand { get; }
+    public IAsyncRelayCommand SendScheduledReportNowCommand { get; }
+
+    public bool IsSendingScheduledReport
+    {
+        get => _isSendingScheduledReport;
+        set => SetProperty(ref _isSendingScheduledReport, value);
+    }
 
     private void LoadFromSettings()
     {
@@ -270,8 +283,46 @@ public class SettingsViewModel : ObservableObject
             return;
         }
 
-        var dayName = SelectedDay?.Label ?? "Lunes";
-        SchedulerStatus = $"📅 Envío programado: cada {dayName} a las {SchedulerHour:00}:{SchedulerMinute:00}";
+        var status = _schedulerService.GetNextRunDescription();
+        SchedulerStatus = $"📅 {status}";
+    }
+
+    private void SaveSchedulerSettings()
+    {
+        var current = _settingsService.Current;
+        current.SchedulerEnabled = SchedulerEnabled;
+        current.SchedulerDay = SelectedDay?.Value ?? DayOfWeek.Monday;
+        current.SchedulerHour = SchedulerHour;
+        current.SchedulerMinute = SchedulerMinute;
+        _settingsService.Save();
+        _schedulerService.Restart();
+    }
+
+    private async Task SendScheduledReportNowAsync()
+    {
+        if (!EmailEnabled || !_emailService.IsConfigured())
+        {
+            MessageBox.Show("Primero configura el correo electrónico.", "Enviar informe", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        IsSendingScheduledReport = true;
+        try
+        {
+            var (success, message) = await _schedulerService.SendNowAsync();
+            if (success)
+            {
+                MessageBox.Show("Informe enviado correctamente.", "Enviar informe", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Error al enviar: {message}", "Enviar informe", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        finally
+        {
+            IsSendingScheduledReport = false;
+        }
     }
 
     private void Save()
