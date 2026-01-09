@@ -104,8 +104,6 @@
                 </Style.Triggers>
             </Style>
 
-            <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
-
             <DataTemplate DataType="{x:Type viewModels:DashboardViewModel}">
                 <views:DashboardView />
             </DataTemplate>
