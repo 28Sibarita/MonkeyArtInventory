@@ -11,6 +11,7 @@ public class InventoryDbContext : DbContext
 
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Movement> Movements => Set<Movement>();
+    public DbSet<Client> Clients => Set<Client>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,11 +37,30 @@ public class InventoryDbContext : DbContext
                 .WithMany(p => p.Movements)
                 .HasForeignKey(m => m.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // Client relationship
+            entity.HasOne(m => m.Client)
+                .WithMany(c => c.Movements)
+                .HasForeignKey(m => m.ClientId)
+                .OnDelete(DeleteBehavior.SetNull);
             // Client-related mapping
             entity.Property(m => m.ClientName).HasMaxLength(200);
             entity.Property(m => m.ClientPrice).HasColumnType("decimal(18,2)");
             entity.Property(m => m.IsConsignment).HasDefaultValue(false);
             entity.Property(m => m.ClientNote).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<Client>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.Name).IsRequired().HasMaxLength(200);
+            entity.Property(c => c.ContactPhone).HasMaxLength(100);
+            entity.Property(c => c.ContactEmail).HasMaxLength(200);
+            entity.Property(c => c.Address).HasMaxLength(500);
+            entity.Property(c => c.Notes).HasMaxLength(1000);
+            entity.Property(c => c.IsActive).HasDefaultValue(true);
+            entity.Property(c => c.IsConsignmentClient).HasDefaultValue(false);
+            entity.Property(c => c.DefaultDiscountPercent).HasColumnType("decimal(5,2)");
+            entity.HasIndex(c => c.Name);
         });
     }
 }

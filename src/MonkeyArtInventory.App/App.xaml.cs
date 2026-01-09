@@ -57,6 +57,7 @@ public partial class App : Application
         services.AddScoped<ProductService>();
         services.AddScoped<MovementService>();
         services.AddScoped<ReportService>();
+        services.AddScoped<ClientService>();
 
         services.AddSingleton<NavigationStore>();
         services.AddTransient<MainViewModel>();
@@ -66,19 +67,22 @@ public partial class App : Application
         services.AddTransient<ReportsViewModel>();
         services.AddTransient<InformesDetalladoViewModel>();
         services.AddTransient<SettingsViewModel>();
+        services.AddTransient<ClientsViewModel>();
         services.AddTransient<Func<DashboardViewModel>>(sp => () => sp.GetRequiredService<DashboardViewModel>());
         services.AddTransient<Func<InventoryViewModel>>(sp => () => sp.GetRequiredService<InventoryViewModel>());
         services.AddTransient<Func<ProductDetailViewModel>>(sp => () => sp.GetRequiredService<ProductDetailViewModel>());
         services.AddTransient<Func<ReportsViewModel>>(sp => () => sp.GetRequiredService<ReportsViewModel>());
         services.AddTransient<Func<InformesDetalladoViewModel>>(sp => () => sp.GetRequiredService<InformesDetalladoViewModel>());
         services.AddTransient<Func<SettingsViewModel>>(sp => () => sp.GetRequiredService<SettingsViewModel>());
+        services.AddTransient<Func<ClientsViewModel>>(sp => () => sp.GetRequiredService<ClientsViewModel>());
         services.AddTransient<Func<MovementType, MovementEntryViewModel>>(sp =>
         {
             return type => new MovementEntryViewModel(
                 type,
                 sp.GetRequiredService<ProductService>(),
                 sp.GetRequiredService<MovementService>(),
-                sp.GetRequiredService<SettingsService>());
+                sp.GetRequiredService<SettingsService>(),
+                sp.GetRequiredService<ClientService>());
         });
 
         _serviceProvider = services.BuildServiceProvider();

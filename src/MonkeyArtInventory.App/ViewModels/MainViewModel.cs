@@ -12,6 +12,7 @@ public class MainViewModel : ObservableObject
     private readonly Func<InventoryViewModel> _inventoryFactory;
     private readonly Func<ReportsViewModel> _reportsFactory;
     private readonly Func<SettingsViewModel> _settingsFactory;
+    private readonly Func<ClientsViewModel> _clientsFactory;
     private readonly Func<MovementType, MovementEntryViewModel> _movementFactory;
 
     public MainViewModel(
@@ -20,6 +21,7 @@ public class MainViewModel : ObservableObject
         Func<InventoryViewModel> inventoryFactory,
         Func<ReportsViewModel> reportsFactory,
         Func<SettingsViewModel> settingsFactory,
+        Func<ClientsViewModel> clientsFactory,
         Func<MovementType, MovementEntryViewModel> movementFactory)
     {
         _navigationStore = navigationStore;
@@ -27,6 +29,7 @@ public class MainViewModel : ObservableObject
         _inventoryFactory = inventoryFactory;
         _reportsFactory = reportsFactory;
         _settingsFactory = settingsFactory;
+        _clientsFactory = clientsFactory;
         _movementFactory = movementFactory;
 
         _navigationStore.PropertyChanged += (_, args) =>
@@ -39,6 +42,7 @@ public class MainViewModel : ObservableObject
 
         ShowDashboardCommand = new RelayCommand(ShowDashboard);
         ShowInventoryCommand = new RelayCommand(ShowInventory);
+        ShowClientsCommand = new RelayCommand(ShowClients);
         ShowReportsCommand = new RelayCommand(ShowReports);
         ShowSettingsCommand = new RelayCommand(ShowSettings);
         ShowEntryCommand = new RelayCommand(() => ShowMovement(MovementType.Entrada));
@@ -53,6 +57,7 @@ public class MainViewModel : ObservableObject
 
     public IRelayCommand ShowDashboardCommand { get; }
     public IRelayCommand ShowInventoryCommand { get; }
+    public IRelayCommand ShowClientsCommand { get; }
     public IRelayCommand ShowReportsCommand { get; }
     public IRelayCommand ShowSettingsCommand { get; }
     public IRelayCommand ShowEntryCommand { get; }
@@ -68,6 +73,11 @@ public class MainViewModel : ObservableObject
     private void ShowInventory()
     {
         _navigationStore.CurrentViewModel = _inventoryFactory();
+    }
+
+    private void ShowClients()
+    {
+        _navigationStore.CurrentViewModel = _clientsFactory();
     }
 
     private void ShowReports()

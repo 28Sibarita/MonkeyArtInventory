@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MonkeyArtInventory.Mac.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+             x:Class="MonkeyArtInventory.Mac.Views.InventoryView"
+             x:DataType="vm:InventoryViewModel">
+
+    <StackPanel Spacing="20">
+        <!-- Search Bar -->
+        <Border Background="White" CornerRadius="8" Padding="15">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBox Text="{Binding SearchText}" Watermark="Buscar producto..." Width="300"/>
+                <Button Content="🔍 Buscar" Command="{Binding SearchCommand}" 
+                        Background="#3182CE" Foreground="White" Padding="15,8"/>
+                <Button Content="🔄 Limpiar" Command="{Binding RefreshCommand}" 
+                        Background="#718096" Foreground="White" Padding="15,8"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Products Grid -->
+        <Border Background="White" CornerRadius="8" Padding="20">
+            <DataGrid ItemsSource="{Binding Productos}" 
+                      SelectedItem="{Binding SelectedProduct}"
+                      AutoGenerateColumns="False" 
+                      IsReadOnly="True" 
+                      Height="400">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="Código de Barras" Binding="{Binding Barcode}" Width="150"/>
+                    <DataGridTextColumn Header="Tipo" Binding="{Binding TypeLabel}" Width="100"/>
+                    <DataGridTextColumn Header="Stock Actual" Binding="{Binding Stock}" Width="100"/>
+                    <DataGridTextColumn Header="Stock Mínimo" Binding="{Binding StockMinimo}" Width="100"/>
+                    <DataGridTextColumn Header="Precio" Binding="{Binding SalePrice, StringFormat='{}{0:C}'}" Width="100"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </StackPanel>
+</UserControl>

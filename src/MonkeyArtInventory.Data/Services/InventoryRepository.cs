@@ -13,26 +13,10 @@ public class InventoryRepository : IInventoryRepository
         _db = db;
     }
 
+    // Products
     public Task<List<Product>> ListProductsAsync()
     {
         return _db.Products.AsNoTracking().ToListAsync();
-    }
-
-    public Task<List<Movement>> ListMovementsAsync(DateTime? from = null, DateTime? to = null)
-    {
-        IQueryable<Movement> query = _db.Movements.AsNoTracking();
-
-        if (from.HasValue)
-        {
-            query = query.Where(m => m.OccurredAt >= from.Value);
-        }
-
-        if (to.HasValue)
-        {
-            query = query.Where(m => m.OccurredAt < to.Value);
-        }
-
-        return query.ToListAsync();
     }
 
     public Task<Product?> FindProductByIdAsync(int id)
@@ -68,10 +52,73 @@ public class InventoryRepository : IInventoryRepository
         return Task.CompletedTask;
     }
 
+    // Movements
+    public Task<List<Movement>> ListMovementsAsync(DateTime? from = null, DateTime? to = null)
+    {
+        IQueryable<Movement> query = _db.Movements.AsNoTracking().Include(m => m.Client);
+
+        if (from.HasValue)
+        {
+            query = query.Where(m => m.OccurredAt >= from.Value);
+        }
+
+        if (to.HasValue)
+        {
+            query = query.Where(m => m.OccurredAt < to.Value);
+        }
+
+        return query.ToListAsync();
+    }
+
     public Task AddMovementAsync(Movement movement)
     {
         _db.Movements.Add(movement);
         return Task.CompletedTask;
+    }
+
+    // Clients
+    public Task<List<Client>> ListClientsAsync()
+    {
+        return _db.Clients.AsNoTracking().ToListAsync();
+    }
+
+    public Task<Client?> FindClientByIdAsync(int id)
+    {
+        return _db.Clients.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+    }
+
+    public Task<Client?> FindClientByNameAsync(string name)
+    {
+        return _db.Clients.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
+    }
+
+    public Task AddClientAsync(Client client)
+    {
+        _db.Clients.Add(client);
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateClientAsync(Client client)
+    {
+        _db.Clients.Update(client);
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteClientAsync(Client client)
+    {
+        _db.Clients.Remove(client);
+        return Task.CompletedTask;
+    }
+
+    public Task<List<Movement>> GetClientMovementsAsync(int clientId)
+    {
+        return _db.Movements
+            .AsNoTracking()
+            .Include(m => m.Product)
+            .Where(m => m.ClientId == clientId)
+            .OrderByDescending(m => m.OccurredAt)
+            .ToListAsync();
     }
 
     public Task SaveChangesAsync()

@@ -1,0 +1,124 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MonkeyArtInventory.Mac.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+             x:Class="MonkeyArtInventory.Mac.Views.MovementEntryView"
+             x:DataType="vm:MovementEntryViewModel">
+
+    <Border Background="White" CornerRadius="8" Padding="20">
+        <StackPanel Spacing="12">
+            <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" Foreground="#2D3748" />
+
+            <!-- Barcode Scanner -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Escanear código de barras" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox Text="{Binding BarcodeText}" Watermark="Código de barras...">
+                        <TextBox.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding ResolveBarcodeCommand}" />
+                        </TextBox.KeyBindings>
+                    </TextBox>
+                    <Button Grid.Column="1" Content="🔍" Command="{Binding ResolveBarcodeCommand}" Margin="8,0,0,0" />
+                </Grid>
+                <TextBlock Text="Presione Enter para buscar" Foreground="#718096" FontSize="11" />
+                <CheckBox Content="Autoguardar al escanear" IsChecked="{Binding AutoSaveOnScan}" />
+            </StackPanel>
+
+            <!-- Product Info -->
+            <Border Background="#F7FAFC" CornerRadius="6" Padding="12" 
+                    IsVisible="{Binding SelectedProduct, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Producto:" FontWeight="Bold" />
+                        <TextBlock Text="{Binding SelectedProduct.Name}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Stock actual:" FontWeight="Bold" />
+                        <TextBlock Text="{Binding CurrentStock}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Quantity and Price -->
+            <Grid ColumnDefinitions="120,160">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Cantidad" />
+                    <NumericUpDown Value="{Binding Quantity}" Minimum="1" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="4" Margin="12,0,0,0"
+                            IsVisible="{Binding EnablePrices}">
+                    <TextBlock Text="Precio unitario" />
+                    <NumericUpDown Value="{Binding UnitPrice}" FormatString="C2" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Client Panel Toggle -->
+            <Button Content="📋 Datos de cliente" Command="{Binding ToggleClientPanelCommand}" 
+                    HorizontalAlignment="Left" />
+
+            <!-- Client Panel -->
+            <Border IsVisible="{Binding ShowClientPanel}" Background="#FAFAFA" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Nombre cliente" />
+                    <TextBox Text="{Binding ClientName}" />
+                    
+                    <TextBlock Text="Precio acordado (opcional)" />
+                    <NumericUpDown Value="{Binding ClientPrice}" FormatString="C2" />
+                    
+                    <CheckBox Content="Consignación" IsChecked="{Binding IsConsignment}" />
+                    
+                    <TextBlock Text="Nota del cliente" />
+                    <TextBox Text="{Binding ClientNote}" AcceptsReturn="True" Height="50" />
+                </StackPanel>
+            </Border>
+
+            <!-- Destination (only for exits) -->
+            <Border IsVisible="{Binding IsExitMovement}" Background="#EBF4FF" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="DESTINO DE LA SALIDA" FontWeight="Bold" Foreground="#6c63ff" />
+                    <Grid ColumnDefinitions="160,*">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Tipo de destino" />
+                            <ComboBox ItemsSource="{Binding DestinationTypes}" 
+                                      SelectedItem="{Binding SelectedDestination}"
+                                      ItemTemplate="{x:Null}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Label}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="4" Margin="12,0,0,0">
+                            <TextBlock Text="Cliente (opcional)" />
+                            <ComboBox ItemsSource="{Binding Clients}"
+                                      SelectedItem="{Binding SelectedClient}"
+                                      ItemTemplate="{x:Null}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Status Message -->
+            <Border IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Padding="10" CornerRadius="4"
+                    Background="#C6F6D5">
+                <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+            </Border>
+
+            <!-- Actions -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="💾 Guardar" Command="{Binding SaveCommand}" Background="#38A169" Foreground="White" />
+                <Button Content="🗑️ Limpiar" Command="{Binding ClearCommand}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -21,7 +21,11 @@ public class Movement
 
     public decimal? UnitPrice { get; set; }
 
-    // Client-related fields (will be persisted after applying EF migration)
+    // Client relationship
+    public int? ClientId { get; set; }
+    public Client? Client { get; set; }
+
+    // Client-related fields for quick access (denormalized for reports)
     [MaxLength(200)]
     public string? ClientName { get; set; }
 
@@ -31,4 +35,27 @@ public class Movement
 
     [MaxLength(500)]
     public string? ClientNote { get; set; }
+
+    /// <summary>
+    /// Destination type for exits: Client, Internal, Other
+    /// </summary>
+    public DestinationType? Destination { get; set; }
+}
+
+/// <summary>
+/// Destination type for product exits
+/// </summary>
+public enum DestinationType
+{
+    [Display(Name = "Cliente")]
+    Client = 0,
+
+    [Display(Name = "Uso Interno")]
+    Internal = 1,
+
+    [Display(Name = "Regalo/Muestra")]
+    Gift = 2,
+
+    [Display(Name = "Otro")]
+    Other = 3
 }

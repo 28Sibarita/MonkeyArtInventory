@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,6 +14,7 @@ public class MovementEntryViewModel : ObservableObject
     private readonly ProductService _productService;
     private readonly MovementService _movementService;
     private readonly SettingsService _settingsService;
+    private readonly ClientService _clientService;
 
     private string _barcodeText = string.Empty;
     private Product? _selectedProduct;
@@ -26,23 +28,75 @@ public class MovementEntryViewModel : ObservableObject
     private bool _showClientPanel;
     private int _currentStock;
     private bool _autoSaveOnScan;
+    private ClientDto? _selectedClient;
+    private DestinationType _selectedDestination = DestinationType.Client;
+    private ObservableCollection<ClientDto> _clients = new();
 
     public MovementEntryViewModel(
         MovementType movementType,
         ProductService productService,
         MovementService movementService,
-        SettingsService settingsService)
+        SettingsService settingsService,
+        ClientService clientService)
     {
         MovementType = movementType;
         _productService = productService;
         _movementService = movementService;
         _settingsService = settingsService;
+        _clientService = clientService;
 
         ResolveBarcodeCommand = new AsyncRelayCommand(ResolveBarcodeAsync);
         SaveCommand = new AsyncRelayCommand(SaveAsync);
         ClearCommand = new RelayCommand(Clear);
         ToggleClientPanelCommand = new RelayCommand(() => ShowClientPanel = !ShowClientPanel);
+
+        // Load clients if this is a Salida movement
+        if (movementType == MovementType.Salida)
+        {
+            ShowClientPanel = true;
+            _ = LoadClientsAsync();
+        }
     }
+
+    private async Task LoadClientsAsync()
+    {
+        var clients = await _clientService.GetActiveClientsForDropdownAsync();
+        Clients = new ObservableCollection<ClientDto>(clients);
+    }
+
+    public ObservableCollection<ClientDto> Clients
+    {
+        get => _clients;
+        set => SetProperty(ref _clients, value);
+    }
+
+    public ClientDto? SelectedClient
+    {
+        get => _selectedClient;
+        set
+        {
+            if (SetProperty(ref _selectedClient, value) && value != null)
+            {
+                ClientName = value.Name;
+                IsConsignment = value.IsConsignmentClient;
+                if (value.DefaultDiscountPercent.HasValue && SelectedProduct?.SalePrice != null)
+                {
+                    var discount = value.DefaultDiscountPercent.Value / 100m;
+                    ClientPrice = SelectedProduct.SalePrice * (1 - discount);
+                }
+            }
+        }
+    }
+
+    public DestinationType SelectedDestination
+    {
+        get => _selectedDestination;
+        set => SetProperty(ref _selectedDestination, value);
+    }
+
+    public IEnumerable<EnumOption<DestinationType>> DestinationTypes => EnumHelper.GetEnumOptions<DestinationType>();
+
+    public bool IsExitMovement => MovementType == MovementType.Salida;
 
     public bool AutoSaveOnScan
     {
@@ -171,7 +225,9 @@ public class MovementEntryViewModel : ObservableObject
             ClientPrice,
             IsConsignment,
             string.IsNullOrWhiteSpace(ClientNote) ? null : ClientNote.Trim(),
-            DateTime.Now);
+            DateTime.Now,
+            SelectedClient?.Id,
+            IsExitMovement ? SelectedDestination : null);
 
         var result = await _movementService.RegisterMovementAsync(dto);
         MessageBox.Show(result.Message, "Movimiento", MessageBoxButton.OK, result.Success ? MessageBoxImage.Information : MessageBoxImage.Error);
@@ -190,5 +246,11 @@ public class MovementEntryViewModel : ObservableObject
         UnitPrice = null;
         Note = null;
         CurrentStock = 0;
+        ClientName = null;
+        ClientPrice = null;
+        IsConsignment = false;
+        ClientNote = null;
+        SelectedClient = null;
+        SelectedDestination = DestinationType.Client;
     }
 }

@@ -16,4 +16,9 @@ public static class EnumHelper
         var attribute = member.GetCustomAttribute<DisplayAttribute>();
         return attribute?.Name ?? value.ToString();
     }
+
+    public static IEnumerable<EnumOption<T>> GetEnumOptions<T>() where T : struct, Enum
+    {
+        return Enum.GetValues<T>().Select(v => new EnumOption<T>(v, GetDisplayName(v)));
+    }
 }

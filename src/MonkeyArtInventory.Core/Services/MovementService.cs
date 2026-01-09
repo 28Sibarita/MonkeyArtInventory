@@ -42,10 +42,12 @@ public class MovementService
             Quantity = dto.Quantity,
             UnitPrice = dto.UnitPrice,
             Note = dto.Note,
+            ClientId = dto.ClientId,
             ClientName = dto.ClientName,
             ClientPrice = dto.ClientPrice,
             IsConsignment = dto.IsConsignment,
             ClientNote = dto.ClientNote,
+            Destination = dto.Destination,
             OccurredAt = dto.OccurredAt ?? DateTime.Now
         };
 

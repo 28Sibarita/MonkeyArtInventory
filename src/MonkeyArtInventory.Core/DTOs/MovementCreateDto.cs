@@ -12,4 +12,6 @@ public record MovementCreateDto(
     decimal? ClientPrice,
     bool IsConsignment,
     string? ClientNote,
-    DateTime? OccurredAt);
+    DateTime? OccurredAt,
+    int? ClientId = null,
+    DestinationType? Destination = null);

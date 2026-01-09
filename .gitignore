@@ -28,6 +28,15 @@ Thumbs.db
 
 # Application
 out_reports/
+
+# Distribution files (uploaded to GitHub Releases)
+*.zip
+*.apk
+publish-android/
+publish-windows-v*/
+publish-crossplatform/
+MonkeyArtInventory-Android-v*/
+MonkeyArtInventory-Windows-v*/
 *.db
 settings.json
 logs/

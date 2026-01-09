@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonkeyArtInventory.Data", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonkeyArtInventory.App", "src\MonkeyArtInventory.App\MonkeyArtInventory.App.csproj", "{F23D556F-647B-4BC4-92D9-593583440941}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonkeyArtInventory.Mac", "src\MonkeyArtInventory.Mac\MonkeyArtInventory.Mac.csproj", "{C6CC2DE7-3154-4019-AFE8-0EB2B78332A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,10 +34,15 @@ Global
 		{F23D556F-647B-4BC4-92D9-593583440941}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F23D556F-647B-4BC4-92D9-593583440941}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F23D556F-647B-4BC4-92D9-593583440941}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6CC2DE7-3154-4019-AFE8-0EB2B78332A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6CC2DE7-3154-4019-AFE8-0EB2B78332A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6CC2DE7-3154-4019-AFE8-0EB2B78332A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6CC2DE7-3154-4019-AFE8-0EB2B78332A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{57FD336D-5B4A-40BD-9DC1-8401721493E3} = {89BED788-10CA-43F1-9268-DB5460F97A4B}
 		{2727F7E1-6972-49BB-A705-FCE75F1630D6} = {89BED788-10CA-43F1-9268-DB5460F97A4B}
 		{F23D556F-647B-4BC4-92D9-593583440941} = {89BED788-10CA-43F1-9268-DB5460F97A4B}
+		{C6CC2DE7-3154-4019-AFE8-0EB2B78332A9} = {89BED788-10CA-43F1-9268-DB5460F97A4B}
 	EndGlobalSection
 EndGlobal

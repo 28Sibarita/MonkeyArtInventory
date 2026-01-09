@@ -17,10 +17,63 @@ namespace MonkeyArtInventory.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
 
+            modelBuilder.Entity("MonkeyArtInventory.Core.Models.Client", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("DefaultDiscountPercent")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsConsignmentClient")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("Clients");
+                });
+
             modelBuilder.Entity("MonkeyArtInventory.Core.Models.Movement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ClientId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ClientName")
@@ -33,6 +86,9 @@ namespace MonkeyArtInventory.Data.Migrations
 
                     b.Property<decimal?>("ClientPrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("Destination")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsConsignment")
                         .ValueGeneratedOnAdd()
@@ -59,6 +115,8 @@ namespace MonkeyArtInventory.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("ProductId");
 
@@ -115,13 +173,25 @@ namespace MonkeyArtInventory.Data.Migrations
 
             modelBuilder.Entity("MonkeyArtInventory.Core.Models.Movement", b =>
                 {
+                    b.HasOne("MonkeyArtInventory.Core.Models.Client", "Client")
+                        .WithMany("Movements")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("MonkeyArtInventory.Core.Models.Product", "Product")
                         .WithMany("Movements")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Client");
+
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("MonkeyArtInventory.Core.Models.Client", b =>
+                {
+                    b.Navigation("Movements");
                 });
 
             modelBuilder.Entity("MonkeyArtInventory.Core.Models.Product", b =>

@@ -1,8 +1,53 @@
-# MonkeyArtInventory
+# 🎨 MonkeyArtInventory
 
-Offline inventory app for MonkeyArt (Dufer). WPF + .NET 8 + SQLite + EF Core.
+Sistema de inventario offline para MonkeyArt. Disponible para **Windows**, **macOS** y **Android**.
 
-## Requirements
+---
+
+## 📥 Descargas v1.1
+
+| Plataforma | Archivo | Tamaño | Requisitos |
+|------------|---------|--------|------------|
+| **🪟 Windows** | [MonkeyArtInventory-Windows-v1.1.zip](https://github.com/28Sibarita/MonkeyArtInventory/releases/download/v1.1/MonkeyArtInventory-Windows-v1.1.zip) | 35 MB | [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) |
+| **🍎 macOS** | [MonkeyArtInventory-Mac-v1.1.zip](https://github.com/28Sibarita/MonkeyArtInventory/releases/download/v1.1/MonkeyArtInventory-Mac-v1.1.zip) | 98 MB | Ninguno (self-contained) |
+| **🤖 Android** | [MonkeyArtInventory-Android-v1.1.zip](https://github.com/28Sibarita/MonkeyArtInventory/releases/download/v1.1/MonkeyArtInventory-Android-v1.1.zip) | 125 MB | Android 5.0+ |
+
+---
+
+## ✨ Características v1.1
+
+- 📦 **Gestión de inventario** - Productos con código de barras, stock mínimo, ubicación
+- 👥 **Clientes/Destinos** - Registra a dónde van los productos
+- 📥📤 **Movimientos** - Entradas y salidas con destino/cliente
+- 📊 **Dashboard** - Resumen visual del inventario
+- 📈 **Reportes** - Exportación a Excel y PDF
+- 💾 **Base de datos local** - SQLite, funciona sin internet
+
+---
+
+## 🚀 Instalación
+
+### Windows
+1. Descomprime el ZIP
+2. Ejecuta `MonkeyArtInventory.App.exe`
+3. Si no tienes .NET 8, descárgalo de [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/8.0)
+
+### macOS
+1. Descomprime el ZIP (contiene versiones para Intel y Apple Silicon)
+2. Ejecuta el archivo `MonkeyArtInventory.Mac`
+3. Si macOS lo bloquea: Preferencias del Sistema → Seguridad → "Abrir de todos modos"
+
+### Android
+1. Descomprime el ZIP
+2. Copia el APK al dispositivo
+3. Habilita "Instalar de fuentes desconocidas"
+4. Instala el APK
+
+---
+
+## 🛠️ Desarrollo
+
+### Requirements
 - .NET 8 SDK
 
 ## Run in development

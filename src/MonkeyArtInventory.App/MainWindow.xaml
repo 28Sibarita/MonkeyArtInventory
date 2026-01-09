@@ -20,6 +20,7 @@
                 <StackPanel Orientation="Vertical">
                     <Button Content="Inicio" Command="{Binding ShowDashboardCommand}" Style="{StaticResource NavButton}" />
                     <Button Content="Inventario" Command="{Binding ShowInventoryCommand}" Style="{StaticResource NavButton}" />
+                    <Button Content="Clientes" Command="{Binding ShowClientsCommand}" Style="{StaticResource NavButton}" />
                     <Button Content="Informes" Command="{Binding ShowReportsCommand}" Style="{StaticResource NavButton}" />
                     <Button Content="Configuración" Command="{Binding ShowSettingsCommand}" Style="{StaticResource NavButton}" />
                 </StackPanel>

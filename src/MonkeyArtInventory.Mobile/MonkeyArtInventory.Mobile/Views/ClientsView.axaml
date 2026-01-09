@@ -1,0 +1,96 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MonkeyArtInventory.Mobile.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="MonkeyArtInventory.Mobile.Views.ClientsView"
+             x:DataType="vm:ClientsViewModel">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Search Bar -->
+        <Border Background="White" Padding="12">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBox Text="{Binding SearchText}" Watermark="🔍 Buscar cliente..." CornerRadius="20" Padding="16,8" />
+                <Button Grid.Column="1" Content="🔍" Command="{Binding SearchCommand}" Margin="8,0,0,0" CornerRadius="20" />
+                <Button Grid.Column="2" Content="➕" Command="{Binding NewClientCommand}" Margin="8,0,0,0" CornerRadius="20" Background="#38A169" Foreground="White" />
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" Margin="8">
+            <StackPanel>
+                <!-- Edit Form (shown when editing) -->
+                <Border Background="White" CornerRadius="12" Padding="16" Margin="4,8" IsVisible="{Binding IsEditing}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Nuevo Cliente" FontWeight="Bold" FontSize="18" />
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Nombre *" FontSize="12" Foreground="#718096" />
+                            <TextBox Text="{Binding ClientName}" CornerRadius="8" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Teléfono" FontSize="12" Foreground="#718096" />
+                            <TextBox Text="{Binding ClientPhone}" CornerRadius="8" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Email" FontSize="12" Foreground="#718096" />
+                            <TextBox Text="{Binding ClientEmail}" CornerRadius="8" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Dirección" FontSize="12" Foreground="#718096" />
+                            <TextBox Text="{Binding ClientAddress}" CornerRadius="8" AcceptsReturn="True" Height="60" />
+                        </StackPanel>
+
+                        <CheckBox Content="Cliente de consignación" IsChecked="{Binding IsConsignmentClient}" />
+
+                        <!-- Status Message -->
+                        <Border IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                Padding="12" CornerRadius="8" Background="#C6F6D5">
+                            <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
+                            <Button Content="Cancelar" Command="{Binding CancelEditCommand}" HorizontalAlignment="Stretch" Margin="0,0,4,0" />
+                            <Button Grid.Column="1" Content="💾 Guardar" Command="{Binding SaveClientCommand}" 
+                                    HorizontalAlignment="Stretch" Margin="4,0,0,0" Background="#3182CE" Foreground="White" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Client List -->
+                <ItemsControl ItemsSource="{Binding Clients}" IsVisible="{Binding !IsEditing}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="White" CornerRadius="12" Padding="16" Margin="4,8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="16" />
+                                        <TextBlock Text="{Binding ContactPhone, FallbackValue='-'}" Foreground="#718096" FontSize="13" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <TextBlock FontSize="12">
+                                                <Run Text="Compras: " Foreground="#718096" />
+                                                <Run Text="{Binding TotalPurchases}" FontWeight="Bold" />
+                                            </TextBlock>
+                                            <TextBlock FontSize="12">
+                                                <Run Text="Total: " Foreground="#718096" />
+                                                <Run Text="{Binding TotalSpent, StringFormat=C}" FontWeight="Bold" Foreground="#38A169" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" CornerRadius="20" Background="#EBF4FF" Padding="8,4" VerticalAlignment="Center"
+                                            IsVisible="{Binding IsConsignmentClient}">
+                                        <TextBlock Text="Consig." FontSize="10" Foreground="#3182CE" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
