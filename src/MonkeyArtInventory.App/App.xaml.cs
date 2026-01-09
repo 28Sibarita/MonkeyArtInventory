@@ -48,6 +48,7 @@ public partial class App : Application
         services.AddSingleton(settingsService);
         services.AddSingleton<BackupService>();
         services.AddSingleton<EmailService>();
+        services.AddSingleton<SchedulerService>();
 
         services.AddDbContext<InventoryDbContext>(options =>
         {
@@ -105,6 +106,13 @@ public partial class App : Application
             {
                 DataContext = _serviceProvider.GetRequiredService<MainViewModel>()
             };
+
+            // Start the scheduler for automatic reports
+            var scheduler = _serviceProvider.GetRequiredService<SchedulerService>();
+            scheduler.Start();
+            
+            // Stop scheduler when app closes
+            mainWindow.Closed += (s, args) => scheduler.Stop();
 
             mainWindow.Show();
         }

@@ -139,7 +139,7 @@ public class ReportService
         };
     }
 
-    public void ExportWeeklyReport(WeeklyReportDto report, string outputDirectory)
+    public string ExportWeeklyReport(WeeklyReportDto report, string outputDirectory)
     {
         Directory.CreateDirectory(outputDirectory);
         var week = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(report.PeriodStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
@@ -152,6 +152,8 @@ public class ReportService
 
         ExportExcel(report, excelPath, chartPaths);
         ExportPdf(report, pdfPath, chartPaths);
+        
+        return pdfPath; // Return the path to the generated PDF
     }
 
     private static void ExportExcel(WeeklyReportDto report, string filePath, List<string>? chartPaths = null)

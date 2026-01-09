@@ -34,10 +34,21 @@ public class ReportsViewModel : ObservableObject
 
         GenerateReportCommand = new AsyncRelayCommand(GenerateAsync);
         ExportReportCommand = new RelayCommand(Export, () => Report is not null);
-        SendEmailCommand = new AsyncRelayCommand(SendEmailAsync, () => CanSendEmail);
+        SendEmailCommand = new AsyncRelayCommand(SendEmailAsync);
         OpenDetailedCommand = new RelayCommand(OpenDetailed);
 
-        _ = GenerateAsync();
+        // Load report asynchronously without blocking
+        Task.Run(async () => 
+        {
+            try
+            {
+                await GenerateAsync();
+            }
+            catch
+            {
+                // Ignore startup errors
+            }
+        });
     }
 
     public WeeklyReportDto? Report
@@ -68,7 +79,20 @@ public class ReportsViewModel : ObservableObject
         set => SetProperty(ref _emailStatus, value);
     }
 
-    public bool CanSendEmail => _emailService.IsConfigured();
+    public bool CanSendEmail
+    {
+        get
+        {
+            try
+            {
+                return _emailService?.IsConfigured() ?? false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
 
     public IAsyncRelayCommand GenerateReportCommand { get; }
     public IRelayCommand ExportReportCommand { get; }
@@ -81,6 +105,10 @@ public class ReportsViewModel : ObservableObject
         try
         {
             Report = await _reportService.BuildWeeklyReportAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al generar informe: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally
         {
@@ -99,11 +127,8 @@ public class ReportsViewModel : ObservableObject
             ? _settingsService.Current.ReportsDirectory
             : OutputDirectory;
 
-        _reportService.ExportWeeklyReport(Report, output);
-        
-        // Store the path to the last exported PDF for email sending
-        var pdfFileName = $"Informe_Semanal_{Report.PeriodStart:yyyyMMdd}_{Report.PeriodEnd:yyyyMMdd}.pdf";
-        _lastExportedPdfPath = Path.Combine(output, pdfFileName);
+        // ExportWeeklyReport now returns the PDF path
+        _lastExportedPdfPath = _reportService.ExportWeeklyReport(Report, output);
         
         MessageBox.Show("Informe exportado correctamente.", "Informes", MessageBoxButton.OK, MessageBoxImage.Information);
         OnPropertyChanged(nameof(CanSendEmail));
@@ -118,7 +143,7 @@ public class ReportsViewModel : ObservableObject
         {
             if (Report is null)
             {
-                MessageBox.Show("Primero genera y exporta el informe.", "Enviar correo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Primero genera el informe.", "Enviar correo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -127,9 +152,7 @@ public class ReportsViewModel : ObservableObject
                 ? _settingsService.Current.ReportsDirectory
                 : OutputDirectory;
 
-            _reportService.ExportWeeklyReport(Report, output);
-            var pdfFileName = $"Informe_Semanal_{Report.PeriodStart:yyyyMMdd}_{Report.PeriodEnd:yyyyMMdd}.pdf";
-            _lastExportedPdfPath = Path.Combine(output, pdfFileName);
+            _lastExportedPdfPath = _reportService.ExportWeeklyReport(Report, output);
         }
 
         IsBusy = true;

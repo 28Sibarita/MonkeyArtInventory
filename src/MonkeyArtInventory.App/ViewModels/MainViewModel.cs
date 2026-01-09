@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MonkeyArtInventory.App.Infrastructure;
 using MonkeyArtInventory.Core.Models;
+using System.Windows;
 
 namespace MonkeyArtInventory.App.ViewModels;
 
@@ -82,7 +83,14 @@ public class MainViewModel : ObservableObject
 
     private void ShowReports()
     {
-        _navigationStore.CurrentViewModel = _reportsFactory();
+        try
+        {
+            _navigationStore.CurrentViewModel = _reportsFactory();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al abrir Informes: {ex.Message}\n\n{ex.InnerException?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private void ShowSettings()

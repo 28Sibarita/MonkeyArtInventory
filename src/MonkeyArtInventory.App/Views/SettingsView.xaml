@@ -100,6 +100,53 @@
                     </Border>
                 </StackPanel>
             </Border>
+
+            <!-- Configuración de Automatización -->
+            <Border Style="{StaticResource Card}" Margin="8,8,8,8">
+                <StackPanel>
+                    <TextBlock Text="⏰ Envío Automático de Informes" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,8"/>
+                    
+                    <CheckBox Content="Habilitar envío automático semanal" IsChecked="{Binding SchedulerEnabled}" Margin="4,0,4,8" />
+
+                    <TextBlock Text="Día de la semana:" Margin="0,4,0,0"/>
+                    <ComboBox ItemsSource="{Binding DayOptions}" 
+                              SelectedItem="{Binding SelectedDay}" 
+                              DisplayMemberPath="Label"
+                              IsEnabled="{Binding SchedulerEnabled}"
+                              Width="200" HorizontalAlignment="Left"/>
+
+                    <TextBlock Text="Hora de envío:" Margin="0,8,0,0"/>
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox ItemsSource="{Binding HourOptions}" 
+                                  SelectedItem="{Binding SchedulerHour}" 
+                                  IsEnabled="{Binding SchedulerEnabled}"
+                                  Width="70"/>
+                        <TextBlock Text=" : " VerticalAlignment="Center" FontWeight="Bold"/>
+                        <ComboBox ItemsSource="{Binding MinuteOptions}" 
+                                  SelectedItem="{Binding SchedulerMinute}" 
+                                  IsEnabled="{Binding SchedulerEnabled}"
+                                  Width="70"/>
+                    </StackPanel>
+
+                    <!-- Estado del scheduler -->
+                    <Border Background="#E3F2FD" CornerRadius="4" Padding="8" Margin="0,12,0,0">
+                        <TextBlock Text="{Binding SchedulerStatus}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                    </Border>
+
+                    <!-- Información adicional -->
+                    <Border Background="#F3E5F5" CornerRadius="4" Padding="8" Margin="0,8,0,0">
+                        <StackPanel>
+                            <TextBlock Text="ℹ️ Información:" FontWeight="SemiBold" FontSize="12"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="11" Margin="0,4,0,0">
+• La app debe estar abierta para enviar automáticamente
+• Se enviará el informe de la semana anterior
+• Asegúrate de tener configurado el correo correctamente
+• El informe se guardará también en la carpeta de reportes
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

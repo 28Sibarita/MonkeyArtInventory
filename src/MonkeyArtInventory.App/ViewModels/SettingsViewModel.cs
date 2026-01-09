@@ -1,15 +1,23 @@
 using System.Windows;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MonkeyArtInventory.Core.Services;
 
 namespace MonkeyArtInventory.App.ViewModels;
 
+public class DayOption
+{
+    public DayOfWeek Value { get; set; }
+    public string Label { get; set; } = string.Empty;
+}
+
 public class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settingsService;
     private readonly BackupService _backupService;
     private readonly EmailService _emailService;
+    private readonly SchedulerService _schedulerService;
 
     private string _dataDirectory = string.Empty;
     private string _databasePath = string.Empty;
@@ -29,18 +37,47 @@ public class SettingsViewModel : ObservableObject
     private bool _useSsl = true;
     private bool _isSendingTestEmail;
 
-    public SettingsViewModel(SettingsService settingsService, BackupService backupService, EmailService emailService)
+    // Scheduler fields
+    private bool _schedulerEnabled;
+    private DayOption? _selectedDay;
+    private int _schedulerHour = 8;
+    private int _schedulerMinute = 0;
+    private string _schedulerStatus = string.Empty;
+
+    public SettingsViewModel(SettingsService settingsService, BackupService backupService, EmailService emailService, SchedulerService schedulerService)
     {
         _settingsService = settingsService;
         _backupService = backupService;
         _emailService = emailService;
+        _schedulerService = schedulerService;
+
+        // Initialize day options
+        DayOptions = new ObservableCollection<DayOption>
+        {
+            new() { Value = DayOfWeek.Monday, Label = "Lunes" },
+            new() { Value = DayOfWeek.Tuesday, Label = "Martes" },
+            new() { Value = DayOfWeek.Wednesday, Label = "Miércoles" },
+            new() { Value = DayOfWeek.Thursday, Label = "Jueves" },
+            new() { Value = DayOfWeek.Friday, Label = "Viernes" },
+            new() { Value = DayOfWeek.Saturday, Label = "Sábado" },
+            new() { Value = DayOfWeek.Sunday, Label = "Domingo" }
+        };
+
+        // Initialize hour options (0-23)
+        HourOptions = new ObservableCollection<int>(Enumerable.Range(0, 24));
+        MinuteOptions = new ObservableCollection<int>(Enumerable.Range(0, 60).Where(m => m % 5 == 0)); // 0, 5, 10, ... 55
 
         LoadFromSettings();
+        UpdateSchedulerStatus();
 
         SaveCommand = new RelayCommand(Save);
         CreateBackupCommand = new RelayCommand(CreateBackup);
         SendTestEmailCommand = new AsyncRelayCommand(SendTestEmailAsync);
     }
+
+    public ObservableCollection<DayOption> DayOptions { get; }
+    public ObservableCollection<int> HourOptions { get; }
+    public ObservableCollection<int> MinuteOptions { get; }
 
     public string DataDirectory
     {
@@ -133,6 +170,61 @@ public class SettingsViewModel : ObservableObject
         set => SetProperty(ref _isSendingTestEmail, value);
     }
 
+    // Scheduler Properties
+    public bool SchedulerEnabled
+    {
+        get => _schedulerEnabled;
+        set
+        {
+            if (SetProperty(ref _schedulerEnabled, value))
+            {
+                UpdateSchedulerStatus();
+            }
+        }
+    }
+
+    public DayOption? SelectedDay
+    {
+        get => _selectedDay;
+        set
+        {
+            if (SetProperty(ref _selectedDay, value))
+            {
+                UpdateSchedulerStatus();
+            }
+        }
+    }
+
+    public int SchedulerHour
+    {
+        get => _schedulerHour;
+        set
+        {
+            if (SetProperty(ref _schedulerHour, value))
+            {
+                UpdateSchedulerStatus();
+            }
+        }
+    }
+
+    public int SchedulerMinute
+    {
+        get => _schedulerMinute;
+        set
+        {
+            if (SetProperty(ref _schedulerMinute, value))
+            {
+                UpdateSchedulerStatus();
+            }
+        }
+    }
+
+    public string SchedulerStatus
+    {
+        get => _schedulerStatus;
+        set => SetProperty(ref _schedulerStatus, value);
+    }
+
     public IRelayCommand SaveCommand { get; }
     public IRelayCommand CreateBackupCommand { get; }
     public IAsyncRelayCommand SendTestEmailCommand { get; }
@@ -156,6 +248,30 @@ public class SettingsViewModel : ObservableObject
         EmailFrom = current.EmailFrom;
         EmailTo = current.EmailTo;
         UseSsl = current.UseSsl;
+
+        // Scheduler settings
+        SchedulerEnabled = current.SchedulerEnabled;
+        SelectedDay = DayOptions.FirstOrDefault(d => d.Value == current.SchedulerDay) ?? DayOptions[0];
+        SchedulerHour = current.SchedulerHour;
+        SchedulerMinute = current.SchedulerMinute;
+    }
+
+    private void UpdateSchedulerStatus()
+    {
+        if (!SchedulerEnabled)
+        {
+            SchedulerStatus = "Envío automático desactivado";
+            return;
+        }
+
+        if (!EmailEnabled)
+        {
+            SchedulerStatus = "⚠️ Primero habilita y configura el correo electrónico";
+            return;
+        }
+
+        var dayName = SelectedDay?.Label ?? "Lunes";
+        SchedulerStatus = $"📅 Envío programado: cada {dayName} a las {SchedulerHour:00}:{SchedulerMinute:00}";
     }
 
     private void Save()
@@ -178,7 +294,17 @@ public class SettingsViewModel : ObservableObject
         current.EmailTo = EmailTo;
         current.UseSsl = UseSsl;
 
+        // Scheduler settings
+        current.SchedulerEnabled = SchedulerEnabled;
+        current.SchedulerDay = SelectedDay?.Value ?? DayOfWeek.Monday;
+        current.SchedulerHour = SchedulerHour;
+        current.SchedulerMinute = SchedulerMinute;
+
         _settingsService.Save();
+        
+        // Restart scheduler with new settings
+        _schedulerService.Restart();
+        
         MessageBox.Show("Configuración guardada correctamente.", "Configuración", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 

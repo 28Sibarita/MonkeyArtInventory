@@ -6,6 +6,11 @@
              xmlns:converters="clr-namespace:MonkeyArtInventory.App.Converters">
     <Application.Resources>
         <ResourceDictionary>
+            <!-- Converters -->
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <converters:NullToVisibilityConverter x:Key="NullToVisibility" />
+            <converters:ImagePathToBitmapConverter x:Key="ImagePathToBitmapConverter" />
+            
             <SolidColorBrush x:Key="AppBackground" Color="#FFF6F7F9" />
             <SolidColorBrush x:Key="AccentBrush" Color="#FF2A5CAA" />
             <SolidColorBrush x:Key="AccentLightBrush" Color="#FFE3ECF9" />
@@ -98,8 +103,6 @@
             </Style>
 
             <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
-            <converters:NullToVisibilityConverter x:Key="NullToVisibility" />
-            <converters:ImagePathToBitmapConverter x:Key="ImagePathToBitmapConverter" />
 
             <DataTemplate DataType="{x:Type viewModels:DashboardViewModel}">
                 <views:DashboardView />

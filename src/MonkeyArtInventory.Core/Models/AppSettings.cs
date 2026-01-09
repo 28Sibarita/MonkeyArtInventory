@@ -20,6 +20,13 @@ public class AppSettings
     public string EmailTo { get; set; } = string.Empty;
     public bool UseSsl { get; set; } = true;
 
+    // Scheduler Settings (Automatic Report Sending)
+    public bool SchedulerEnabled { get; set; } = false;
+    public DayOfWeek SchedulerDay { get; set; } = DayOfWeek.Monday;
+    public int SchedulerHour { get; set; } = 8;
+    public int SchedulerMinute { get; set; } = 0;
+    public DateTime? LastScheduledRun { get; set; } = null;
+
     public static AppSettings CreateDefault()
     {
         var baseDir = Path.Combine(
@@ -43,7 +50,13 @@ public class AppSettings
             SmtpPassword = string.Empty,
             EmailFrom = string.Empty,
             EmailTo = string.Empty,
-            UseSsl = true
+            UseSsl = true,
+            // Scheduler defaults
+            SchedulerEnabled = false,
+            SchedulerDay = DayOfWeek.Monday,
+            SchedulerHour = 8,
+            SchedulerMinute = 0,
+            LastScheduledRun = null
         };
     }
 }
