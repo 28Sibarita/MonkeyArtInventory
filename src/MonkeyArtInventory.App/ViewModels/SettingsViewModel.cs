@@ -75,6 +75,7 @@ public class SettingsViewModel : ObservableObject
         CreateBackupCommand = new RelayCommand(CreateBackup);
         SendTestEmailCommand = new AsyncRelayCommand(SendTestEmailAsync);
         SendScheduledReportNowCommand = new AsyncRelayCommand(SendScheduledReportNowAsync);
+        SaveSchedulerCommand = new RelayCommand(SaveSchedulerSettingsWithMessage);
     }
 
     public ObservableCollection<DayOption> DayOptions { get; }
@@ -181,7 +182,6 @@ public class SettingsViewModel : ObservableObject
             if (SetProperty(ref _schedulerEnabled, value))
             {
                 UpdateSchedulerStatus();
-                SaveSchedulerSettings();
             }
         }
     }
@@ -194,7 +194,6 @@ public class SettingsViewModel : ObservableObject
             if (SetProperty(ref _selectedDay, value))
             {
                 UpdateSchedulerStatus();
-                SaveSchedulerSettings();
             }
         }
     }
@@ -207,7 +206,6 @@ public class SettingsViewModel : ObservableObject
             if (SetProperty(ref _schedulerHour, value))
             {
                 UpdateSchedulerStatus();
-                SaveSchedulerSettings();
             }
         }
     }
@@ -220,7 +218,6 @@ public class SettingsViewModel : ObservableObject
             if (SetProperty(ref _schedulerMinute, value))
             {
                 UpdateSchedulerStatus();
-                SaveSchedulerSettings();
             }
         }
     }
@@ -235,6 +232,7 @@ public class SettingsViewModel : ObservableObject
     public IRelayCommand CreateBackupCommand { get; }
     public IAsyncRelayCommand SendTestEmailCommand { get; }
     public IAsyncRelayCommand SendScheduledReportNowCommand { get; }
+    public IRelayCommand SaveSchedulerCommand { get; }
 
     public bool IsSendingScheduledReport
     {
@@ -296,6 +294,13 @@ public class SettingsViewModel : ObservableObject
         current.SchedulerMinute = SchedulerMinute;
         _settingsService.Save();
         _schedulerService.Restart();
+        UpdateSchedulerStatus();
+    }
+
+    private void SaveSchedulerSettingsWithMessage()
+    {
+        SaveSchedulerSettings();
+        MessageBox.Show("Configuración de envío automático guardada.", "Configuración", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private async Task SendScheduledReportNowAsync()
