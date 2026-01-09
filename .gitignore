@@ -1,0 +1,47 @@
+# Build results
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.sln.iml
+
+# NuGet
+.nuget/
+*.nupkg
+*.snupkg
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Application
+out_reports/
+
+# Distribution files (uploaded to GitHub Releases)
+*.zip
+*.apk
+publish-android/
+publish-windows-v*/
+publish-crossplatform/
+MonkeyArtInventory-Android-v*/
+MonkeyArtInventory-Windows-v*/
+*.db
+settings.json
+logs/
+Backups/
+
+# Temp files
+*.log
+*.tmp

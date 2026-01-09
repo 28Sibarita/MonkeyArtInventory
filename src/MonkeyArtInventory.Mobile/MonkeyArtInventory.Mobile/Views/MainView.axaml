@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MonkeyArtInventory.Mobile.ViewModels"
+             xmlns:views="using:MonkeyArtInventory.Mobile.Views"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="700"
+             x:Class="MonkeyArtInventory.Mobile.Views.MainView"
+             x:DataType="vm:MainViewModel">
+
+    <UserControl.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:InventoryViewModel}">
+            <views:InventoryView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ClientsViewModel}">
+            <views:ClientsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MovementEntryViewModel}">
+            <views:MovementEntryView />
+        </DataTemplate>
+    </UserControl.DataTemplates>
+
+    <Grid>
+        <!-- Main Content Area -->
+        <Grid RowDefinitions="Auto,*">
+            <!-- Top Bar -->
+            <Border Background="#2D3748" Padding="12">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Button Content="☰" Command="{Binding ToggleMenuCommand}" 
+                            Background="Transparent" Foreground="White" FontSize="20" />
+                    <TextBlock Grid.Column="1" Text="{Binding CurrentViewName}" 
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               FontSize="18" FontWeight="Bold" Foreground="White" />
+                    <TextBlock Grid.Column="2" Text="🎨" FontSize="20" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Content -->
+            <Border Grid.Row="1" Background="#F7FAFC">
+                <ContentControl Content="{Binding CurrentView}" />
+            </Border>
+        </Grid>
+
+        <!-- Side Menu Overlay -->
+        <Button Background="#80000000" IsVisible="{Binding IsMenuOpen}" 
+                Command="{Binding ToggleMenuCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                BorderThickness="0" CornerRadius="0" />
+
+        <!-- Side Menu -->
+        <Border Background="#2D3748" Width="280" HorizontalAlignment="Left"
+                IsVisible="{Binding IsMenuOpen}">
+            <StackPanel>
+                <!-- Menu Header -->
+                <Border Background="#1A202C" Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="🎨 Monkey Art" FontSize="22" FontWeight="Bold" Foreground="White" />
+                        <TextBlock Text="Inventario" Foreground="#A0AEC0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Menu Items -->
+                <StackPanel Margin="0,20,0,0">
+                    <Button Command="{Binding NavigateToDashboardCommand}" 
+                            Content="📊  Dashboard" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Background="Transparent" Foreground="White" Padding="20,15" FontSize="16" />
+                    
+                    <Button Command="{Binding NavigateToInventoryCommand}" 
+                            Content="📦  Inventario" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Background="Transparent" Foreground="White" Padding="20,15" FontSize="16" />
+                    
+                    <Button Command="{Binding NavigateToClientsCommand}" 
+                            Content="👥  Clientes" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Background="Transparent" Foreground="White" Padding="20,15" FontSize="16" />
+
+                    <Border Background="#4A5568" Height="1" Margin="20,15" />
+                    <TextBlock Text="MOVIMIENTOS" Foreground="#718096" FontSize="12" Margin="20,5" />
+
+                    <Button Command="{Binding NavigateToEntryCommand}" 
+                            Content="📥  Entrada" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Background="#38A169" Foreground="White" Padding="20,15" FontSize="16" Margin="10,5" CornerRadius="8" />
+                    
+                    <Button Command="{Binding NavigateToExitCommand}" 
+                            Content="📤  Salida" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                            Background="#E53E3E" Foreground="White" Padding="20,15" FontSize="16" Margin="10,5" CornerRadius="8" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

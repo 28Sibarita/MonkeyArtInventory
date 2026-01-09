@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MonkeyArtInventory.Mac.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+             x:Class="MonkeyArtInventory.Mac.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+
+    <StackPanel Spacing="20">
+        <!-- Stats Cards -->
+        <WrapPanel>
+            <Border Background="White" CornerRadius="8" Padding="20" Margin="5" Width="180">
+                <StackPanel>
+                    <TextBlock Text="📦 Total Productos" Foreground="#718096" FontSize="12"/>
+                    <TextBlock Text="{Binding TotalProductos}" FontSize="32" FontWeight="Bold" Foreground="#2D3748"/>
+                </StackPanel>
+            </Border>
+            
+            <Border Background="White" CornerRadius="8" Padding="20" Margin="5" Width="180">
+                <StackPanel>
+                    <TextBlock Text="⚠️ Stock Bajo" Foreground="#718096" FontSize="12"/>
+                    <TextBlock Text="{Binding StockBajo}" FontSize="32" FontWeight="Bold" Foreground="#E53E3E"/>
+                </StackPanel>
+            </Border>
+            
+            <Border Background="White" CornerRadius="8" Padding="20" Margin="5" Width="180">
+                <StackPanel>
+                    <TextBlock Text="📥 Entradas Hoy" Foreground="#718096" FontSize="12"/>
+                    <TextBlock Text="{Binding EntradasHoy}" FontSize="32" FontWeight="Bold" Foreground="#38A169"/>
+                </StackPanel>
+            </Border>
+            
+            <Border Background="White" CornerRadius="8" Padding="20" Margin="5" Width="180">
+                <StackPanel>
+                    <TextBlock Text="📤 Salidas Hoy" Foreground="#718096" FontSize="12"/>
+                    <TextBlock Text="{Binding SalidasHoy}" FontSize="32" FontWeight="Bold" Foreground="#3182CE"/>
+                </StackPanel>
+            </Border>
+        </WrapPanel>
+
+        <!-- Recent Products -->
+        <Border Background="White" CornerRadius="8" Padding="20">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Productos Recientes" FontSize="16" FontWeight="Bold" Foreground="#2D3748"/>
+                    <Button Content="🔄 Actualizar" Command="{Binding RefreshCommand}" 
+                            Margin="20,0,0,0" Background="#4A5568" Foreground="White"/>
+                </StackPanel>
+                
+                <DataGrid ItemsSource="{Binding Productos}" AutoGenerateColumns="False" 
+                          IsReadOnly="True" Height="300">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Código" Binding="{Binding Barcode}" Width="120"/>
+                        <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
+                        <DataGridTextColumn Header="Precio" Binding="{Binding SalePrice, StringFormat='{}{0:C}'}" Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MonkeyArtInventory.Mobile.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="MonkeyArtInventory.Mobile.Views.MovementEntryView"
+             x:DataType="vm:MovementEntryViewModel">
+
+    <ScrollViewer>
+        <StackPanel Spacing="12" Margin="16">
+            <!-- Header -->
+            <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#2D3748" />
+
+            <!-- Barcode Scanner -->
+            <Border Background="White" CornerRadius="12" Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Código de Barras" FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Text="{Binding BarcodeText}" Watermark="Escanear o escribir código..." CornerRadius="8">
+                            <TextBox.KeyBindings>
+                                <KeyBinding Gesture="Enter" Command="{Binding ResolveBarcodeCommand}" />
+                            </TextBox.KeyBindings>
+                        </TextBox>
+                        <Button Grid.Column="1" Content="🔍" Command="{Binding ResolveBarcodeCommand}" Margin="8,0,0,0" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Product Info -->
+            <Border Background="White" CornerRadius="12" Padding="16" 
+                    IsVisible="{Binding SelectedProduct, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="{Binding SelectedProduct.Name}" FontSize="18" FontWeight="Bold" />
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel>
+                            <TextBlock Text="Stock Actual" FontSize="11" Foreground="#718096" />
+                            <TextBlock Text="{Binding CurrentStock}" FontSize="24" FontWeight="Bold" Foreground="#3182CE" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Cantidad" FontSize="11" Foreground="#718096" />
+                            <NumericUpDown Value="{Binding Quantity}" Minimum="1" FontSize="20" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Destination (for exits) -->
+            <Border Background="#EBF4FF" CornerRadius="12" Padding="16" IsVisible="{Binding IsExitMovement}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="📤 Destino de Salida" FontWeight="Bold" Foreground="#3182CE" />
+                    
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Tipo de Destino" FontSize="12" Foreground="#718096" />
+                        <ComboBox ItemsSource="{Binding DestinationTypes}" SelectedItem="{Binding SelectedDestination}" HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Label}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Cliente" FontSize="12" Foreground="#718096" />
+                        <ComboBox ItemsSource="{Binding Clients}" SelectedItem="{Binding SelectedClient}" HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Client Panel Toggle -->
+            <Button Content="📋 Más opciones de cliente" Command="{Binding ToggleClientPanelCommand}" HorizontalAlignment="Stretch" />
+
+            <!-- Client Panel -->
+            <Border Background="White" CornerRadius="12" Padding="16" IsVisible="{Binding ShowClientPanel}">
+                <StackPanel Spacing="8">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Nombre Cliente" FontSize="12" Foreground="#718096" />
+                        <TextBox Text="{Binding ClientName}" CornerRadius="8" />
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Precio Acordado" FontSize="12" Foreground="#718096" />
+                        <NumericUpDown Value="{Binding ClientPrice}" FormatString="C2" />
+                    </StackPanel>
+                    <CheckBox Content="Es Consignación" IsChecked="{Binding IsConsignment}" />
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Nota" FontSize="12" Foreground="#718096" />
+                        <TextBox Text="{Binding ClientNote}" CornerRadius="8" AcceptsReturn="True" Height="60" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Status Message -->
+            <Border IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Padding="16" CornerRadius="8" Background="#C6F6D5">
+                <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" HorizontalAlignment="Center" />
+            </Border>
+
+            <!-- Actions -->
+            <Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
+                <Button Content="🗑️ Limpiar" Command="{Binding ClearCommand}" HorizontalAlignment="Stretch" Margin="0,0,4,0" />
+                <Button Grid.Column="1" Content="💾 Guardar" Command="{Binding SaveCommand}" 
+                        HorizontalAlignment="Stretch" Margin="4,0,0,0" Background="#38A169" Foreground="White" />
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

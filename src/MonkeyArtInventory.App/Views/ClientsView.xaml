@@ -1,0 +1,229 @@
+<UserControl x:Class="MonkeyArtInventory.App.Views.ClientsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:MonkeyArtInventory.App.ViewModels"
+             xmlns:converters="clr-namespace:MonkeyArtInventory.App.Converters">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Background="White" Padding="20" Margin="0,0,0,12" CornerRadius="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="👥 Clientes" FontSize="24" FontWeight="Bold" Foreground="#2D3748" />
+                    <TextBlock Text="Gestiona tus clientes y destinos de productos" Foreground="#718096" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                             Width="200" Margin="0,0,8,0" 
+                             Tag="Buscar cliente..." />
+                    <Button Content="🔍 Buscar" Command="{Binding SearchCommand}" Margin="0,0,8,0" />
+                    <CheckBox Content="Mostrar inactivos" IsChecked="{Binding ShowInactive}" 
+                              VerticalAlignment="Center" Margin="0,0,16,0" />
+                    <Button Content="➕ Nuevo Cliente" Command="{Binding NewClientCommand}" 
+                            Background="#38A169" Foreground="White" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="350" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Client List -->
+            <Border Background="White" CornerRadius="8" Padding="16" Margin="0,0,12,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Lista de Clientes" FontWeight="Bold" FontSize="16" Margin="0,0,0,12" />
+
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Clients}" 
+                              SelectedItem="{Binding SelectedClient}"
+                              AutoGenerateColumns="False" 
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              CanUserAddRows="False"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*" />
+                            <DataGridTextColumn Header="Teléfono" Binding="{Binding ContactPhone}" Width="120" />
+                            <DataGridTextColumn Header="Email" Binding="{Binding ContactEmail}" Width="150" />
+                            <DataGridTextColumn Header="Compras" Binding="{Binding TotalPurchases}" Width="80" />
+                            <DataGridTextColumn Header="Total Gastado" Binding="{Binding TotalSpent, StringFormat=C}" Width="120" />
+                            <DataGridTemplateColumn Header="Consignación" Width="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding IsConsignmentClient}" 
+                                                   HorizontalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="No" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsConsignmentClient}" Value="True">
+                                                            <Setter Property="Text" Value="Sí ✓" />
+                                                            <Setter Property="Foreground" Value="#38A169" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- Right Panel - Details / Edit Form -->
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="16">
+                <Grid>
+                    <!-- View Mode -->
+                    <StackPanel Visibility="{Binding IsEditing, Converter={StaticResource InverseBoolToVis}}">
+                        <TextBlock Text="Detalle del Cliente" FontWeight="Bold" FontSize="16" Margin="0,0,0,16" />
+
+                        <StackPanel Visibility="{Binding SelectedClient, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{Binding SelectedClient.Name}" FontSize="18" FontWeight="SemiBold" />
+                            
+                            <StackPanel Margin="0,12,0,0">
+                                <TextBlock Text="📞 Teléfono" FontWeight="SemiBold" Foreground="#718096" FontSize="12" />
+                                <TextBlock Text="{Binding SelectedClient.ContactPhone, TargetNullValue='-'}" Margin="0,2,0,8" />
+
+                                <TextBlock Text="📧 Email" FontWeight="SemiBold" Foreground="#718096" FontSize="12" />
+                                <TextBlock Text="{Binding SelectedClient.ContactEmail, TargetNullValue='-'}" Margin="0,2,0,8" />
+
+                                <TextBlock Text="📍 Dirección" FontWeight="SemiBold" Foreground="#718096" FontSize="12" />
+                                <TextBlock Text="{Binding SelectedClient.Address, TargetNullValue='-'}" TextWrapping="Wrap" Margin="0,2,0,8" />
+
+                                <TextBlock Text="📝 Notas" FontWeight="SemiBold" Foreground="#718096" FontSize="12" />
+                                <TextBlock Text="{Binding SelectedClient.Notes, TargetNullValue='-'}" TextWrapping="Wrap" Margin="0,2,0,16" />
+
+                                <Border Background="#F7FAFC" CornerRadius="6" Padding="12" Margin="0,0,0,16">
+                                    <StackPanel>
+                                        <TextBlock Text="📊 Estadísticas" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <TextBlock Text="Compras" Foreground="#718096" FontSize="12" />
+                                                <TextBlock Text="{Binding SelectedClient.TotalPurchases}" FontSize="20" FontWeight="Bold" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="Total Gastado" Foreground="#718096" FontSize="12" />
+                                                <TextBlock Text="{Binding SelectedClient.TotalSpent, StringFormat=C}" FontSize="20" FontWeight="Bold" Foreground="#38A169" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="✏️ Editar" Command="{Binding EditClientCommand}" Margin="0,0,8,0" />
+                                <Button Content="🗑️ Eliminar" Command="{Binding DeleteClientCommand}" Background="#E53E3E" Foreground="White" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock Text="Selecciona un cliente para ver sus detalles" 
+                                   Foreground="#A0AEC0" 
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Visibility="{Binding SelectedClient, Converter={StaticResource InverseBoolToVis}}" />
+                    </StackPanel>
+
+                    <!-- Edit Mode -->
+                    <ScrollViewer Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold" FontSize="16" Margin="0,0,0,16">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Nuevo Cliente" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding EditingClientId}" Value="0">
+                                                <Setter Property="Text" Value="Nuevo Cliente" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <TextBlock Text="Nombre *" FontWeight="SemiBold" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding ClientName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+
+                            <TextBlock Text="Teléfono" FontWeight="SemiBold" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding ClientPhone, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+
+                            <TextBlock Text="Email" FontWeight="SemiBold" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding ClientEmail, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+
+                            <TextBlock Text="Dirección" FontWeight="SemiBold" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding ClientAddress, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" AcceptsReturn="True" Height="60" Margin="0,0,0,12" />
+
+                            <TextBlock Text="Notas" FontWeight="SemiBold" Margin="0,0,0,4" />
+                            <TextBox Text="{Binding ClientNotes, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" AcceptsReturn="True" Height="60" Margin="0,0,0,12" />
+
+                            <CheckBox Content="Cliente de consignación" 
+                                      IsChecked="{Binding IsConsignmentClient}" 
+                                      Margin="0,0,0,8" />
+
+                            <TextBlock Text="Descuento por defecto (%)" FontWeight="SemiBold" Margin="0,8,0,4" />
+                            <TextBox Text="{Binding DefaultDiscount, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="100" HorizontalAlignment="Left" Margin="0,0,0,12" />
+
+                            <CheckBox Content="Cliente activo" 
+                                      IsChecked="{Binding ClientIsActive}" 
+                                      Margin="0,0,0,16" />
+
+                            <!-- Status Message -->
+                            <Border Margin="0,0,0,12" Padding="8" CornerRadius="4"
+                                    Visibility="{Binding StatusMessage, Converter={StaticResource BoolToVis}}">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#C6F6D5" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsStatusError}" Value="True">
+                                                <Setter Property="Background" Value="#FED7D7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+                            </Border>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Cancelar" Command="{Binding CancelEditCommand}" Margin="0,0,8,0" />
+                                <Button Content="💾 Guardar" Command="{Binding SaveClientCommand}" 
+                                        Background="#3182CE" Foreground="White" />
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
